@@ -15,7 +15,6 @@ function renderButtonList() {
     return;
   }
 
-  // Función recursiva para renderizar la lista con anidación
   const renderLevel = (buttons, parentPath, level) => {
     buttons.forEach((btn, index) => {
       const currentPath = [...parentPath];
@@ -25,7 +24,7 @@ function renderButtonList() {
 
       let iconHtml = `<img src="data:image/png;base64,${btn.data}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">`;
       if (btn.type === "layout") {
-        iconHtml = "📁 "; // Icono de carpeta
+        iconHtml = "📁 "; 
       }
 
       div.innerHTML = `

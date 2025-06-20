@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("configModal")
     .addEventListener("click", function (e) {
-      if (e.target === this) closeConfigModal();
+      if (e.target === this) closeModal();
     });
 
   window.addEventListener("beforeunload", function (event) {
