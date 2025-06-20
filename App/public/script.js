@@ -39,6 +39,15 @@ const iconUploader = document.getElementById("iconUploader");
 const addButtonBtn = document.getElementById("addButtonBtn");
 const mockupBackButton = document.getElementById("mockupBackButton");
 
+window.addEventListener('load', () => {
+  fetch('/clean-uploads', {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => console.log(data.mensaje))
+  .catch(err => console.error('Error cleaning uploads:', err));
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   Object.keys(languages).forEach((code) => {
     let option = document.createElement("option");
@@ -113,7 +122,7 @@ function findCurrentList(path) {
 
 function promptAddButton() {
   if (!currentIconData) {
-    showAlert("Please, first select an icon from 'Choose Icon'.");
+    showAlert("Please, first select an icon.");
     return;
   }
 
@@ -198,7 +207,7 @@ function handleSubfolder() {
 function deleteButton(path, index) {
   const list = findCurrentList(path);
   const button = list[index];
-  if (confirm(`¿Estás seguro de que quieres eliminar "${button.label}"?`)) {
+  if (confirm(`Are you sure you want to delete "${button.label}"?`)) {
     list.splice(index, 1);
     renderButtonList();
     updateMockup();
@@ -274,18 +283,7 @@ function updateMockup() {
   const fixedButtons = [
     { icon: "🔴", label: "Voice record" },
     { icon: "📷", label: "Take photo" },
-    { icon: "📝", label: "Text note" },
-    { icon: "🔴", label: "Voice record" },
-    { icon: "📷", label: "Take photo" },
-    { icon: "📝", label: "Text note" },
-    { icon: "🔴", label: "Voice record" },
-    { icon: "📷", label: "Take photo" },
-    { icon: "📝", label: "Text note" },
-    { icon: "🔴", label: "Voice record" },
-    { icon: "📷", label: "Take photo" },
-    { icon: "📝", label: "Text note" },
-    { icon: "🔴", label: "Voice record" },
-    { icon: "📷", label: "Take photo" },
+    { icon: "📝", label: "Text note" }
   ];
 
   fixedButtons.forEach((fixed) => {
@@ -364,7 +362,6 @@ function generateXML() {
     }
     xml += `  </layout>\n`;
 
-    // Recursivamente añadir los layouts de las subcarpetas
     layout.buttons.forEach((btn) => {
       if (btn.type === "layout") {
         xml += buildLayoutXml(btn.subfolder);
@@ -396,7 +393,7 @@ function generateReadme() {
 function downloadLayout() {
   const layoutName = document.getElementById("layoutName").value;
   if (!layoutName) {
-    showAlert("Por favor, ingresa un nombre para el layout.");
+    showAlert("Insert a name for the layout.");
     return;
   }
 
@@ -479,7 +476,6 @@ const zipDropArea = document.getElementById("zipDropArea");
 const zipInput = document.getElementById("zipInput");
 const zipFileName = document.getElementById("zipFileName");
 
-// Eventos drag & drop
 ["dragenter", "dragover"].forEach((event) => {
   zipDropArea.addEventListener(event, (e) => {
     e.preventDefault();
@@ -525,8 +521,38 @@ function processZipFile() {
     return;
   }
 
-  showAlert(`Processing: ${file.name}`);
+  const formData = new FormData();
+  formData.append('file', file);
+
+  fetch('/api/loadFromZip', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      console.error(response);
+      throw new Error("Failed to process the zip file.");
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      layoutData = data.layoutData;
+      currentMockupPath = ["root"];
+      currentIconData = null;
+      renderButtonList();
+      updateMockup();
+      showAlert("Zip file processed successfully.");
+    } else {
+      showAlert(data.error || "Zip file validation failed.");
+    }
+  })
+  .catch(error => {
+    console.error("Error processing zip file:", error);
+    showAlert("Error processing zip file: " + error.message, "Error");
+  });
 }
+
 
 function processDownloadLayout() {
   showAlert("Download process initiated.");
@@ -536,7 +562,7 @@ function processUploadToGithub() {
   showAlert("Upload process initiated.");
 }
 
-function showAlert(message, title = "Alert") {
+function showAlert(message, title = "Information") {
   const modal = document.getElementById("alertModal");
   document.getElementById("alertTitle").innerText = title;
   document.getElementById("alertMessage").innerText = message;
@@ -557,6 +583,7 @@ function showPrompt(title = "Enter Value", placeholder = "", callback) {
 
   document.getElementById("promptModal").classList.add("show");
   input.focus();
+}
 
 function confirmPrompt() {
   const value = document.getElementById("promptInput").value.trim();
