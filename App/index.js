@@ -3,38 +3,31 @@ const path = require('path');
 const fs = require('fs');
 const gitUploader = require('./api/upload');
 const zipDownloader = require('./api/downloadLayout');
+const cleaner = require('./api/cleaner');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-
-function cleanUploadsDirectory() {
-  const uploadsPath = path.join(__dirname, 'uploads');
-  if (fs.existsSync(uploadsPath)) {
-    fs.readdirSync(uploadsPath).forEach(file => {
-      const filePath = path.join(uploadsPath, file);
-      fs.rmSync(filePath, { recursive: true, force: true });
-    });
-  } else {
-    fs.mkdirSync(uploadsPath);
-  }
-}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', gitUploader);
+
 app.use('/api', zipDownloader);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/clean', cleaner);
 
-app.post('/clean-uploads', (req, res) => {
-  cleanUploadsDirectory();
-  res.json({ mensaje: 'uploads cleaned' });
+app.options('/', (req, res) => {
+  const routes = [];
+  routes.push({ method: 'POST', path: '/api/upload-zip' });
+  routes.push({ method: 'POST', path: '/api/download' });
+  routes.push({ method: 'POST', path: '/api/loadFromZip' });
+  routes.push({ method: 'POST', path: '/api/clean' });
+  res.json({ endpoints: routes });
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.send('🚀 Backend server is running');
 });
 
 // Iniciar servidor

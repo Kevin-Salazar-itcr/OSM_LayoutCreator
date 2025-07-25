@@ -34,3 +34,7 @@ function downloadLayout() {
     link.click();
   });
 }
+
+function processDownloadLayout(){
+  console.log("Processing download layout...");
+}
