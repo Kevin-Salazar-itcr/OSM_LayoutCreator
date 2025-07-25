@@ -18,7 +18,7 @@ router.post('/upload-zip', upload.single('zipfile'), async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error(err.response?.data || err.message);
-    res.status(500).json({ error: 'Error processing ZIP or creating PR.' });
+    res.status(500).json({ error: 'Error processing ZIP or creating commit. Please verify structure of your ZIP file or if your REPO is correct.' });
   }
 });
 

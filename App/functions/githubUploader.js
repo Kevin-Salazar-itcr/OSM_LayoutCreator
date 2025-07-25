@@ -34,11 +34,25 @@ async function uploadZipToGitHub(zipPath) {
   const zip = new AdmZip(zipPath);
   const entries = zip.getEntries();
 
-  const firstLayout = entries.find(e => e.entryName.split('/').length >= 2 && !e.entryName.startsWith('metadata/'));
+  const firstLayout = entries.find(e =>
+    e.entryName.split('/').length >= 2 &&
+    !e.entryName.startsWith('metadata/') &&
+    !e.isDirectory
+  );
   if (!firstLayout) throw new Error('No layout folder found at root level.');
 
   const dispositionName = firstLayout.entryName.split('/')[0];
   const branchName = generateBranchName(dispositionName);
+
+  // ✅ Validar que exista metadata/<layout>.xml
+  const expectedMetadataPath = `metadata/${dispositionName}.xml`;
+  const metadataEntry = entries.find(e =>
+    e.entryName.replace(/^\/|\/$/g, '') === expectedMetadataPath && !e.isDirectory
+  );
+
+  if (!metadataEntry) {
+    throw new Error(`Missing required metadata file: ${expectedMetadataPath}`);
+  }
 
   // 1. Get base commit SHA
   const { data: refData } = await githubApi.get(`/repos/${GITHUB_USERNAME}/${FORK_REPO}/git/ref/heads/${BASE_BRANCH}`);
@@ -110,20 +124,12 @@ async function uploadZipToGitHub(zipPath) {
     sha: newCommit.sha,
   });
 
-  // 6. Create Pull Request to upstream
-  const { data: prData } = await githubApi.post(`/repos/${UPSTREAM_OWNER}/${UPSTREAM_REPO}/pulls`, {
-    title: `Layout uploaded: ${dispositionName}`,
-    head: `${GITHUB_USERNAME}:${branchName}`,
-    base: BASE_BRANCH,
-    body: 'Uploaded layout from OSMTracker layout creator.',
-  });
-
   return {
-    message: `PR created from '${branchName}' to upstream.`,
-    pr_url: prData.html_url,
+    message: `Branch '${branchName}' created and layout committed.`,
     branch: branchName,
   };
 }
+
 
 module.exports = {
   uploadZipToGitHub,

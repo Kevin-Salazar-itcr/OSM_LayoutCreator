@@ -16,7 +16,7 @@ function cleanUploadsDirectory() {
   }
 }
 
-router.post('/', (req, res) => {
+router.get('/', (req, res) => {
   cleanUploadsDirectory();
   res.json({ mensaje: 'uploads cleaned' });
 });

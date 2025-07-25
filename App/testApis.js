@@ -9,14 +9,12 @@ async function testDownload() {
   try {
     const response = await axios.post(`${BASE_URL}/download`, {
       mode: 'github',
-      name: 'prueba',
+      name: 'maxspeed',
       repo: 'osmtracker-android-layouts',
       owner: 'Kevin-Salazar-itcr',
       branch: 'prueba'
     }, { responseType: 'arraybuffer' });
 
-    const zipPath = path.join(__dirname, 'prueba.zip');
-    fs.writeFileSync(zipPath, response.data);
     console.log('✅ download → ZIP guardado como prueba.zip');
   } catch (error) {
     console.error('❌ download error:', error.response?.data || error.message);
@@ -41,7 +39,7 @@ async function testLoadFromZip() {
 async function testUploadZip() {
   try {
     const form = new FormData();
-    form.append('zipfile', fs.createReadStream(path.join(__dirname, 'Hydranten.zip')));
+    form.append('zipfile', fs.createReadStream(path.join(__dirname, '/uploads/maxspeed_usa.zip')));
 
     const response = await axios.post(`${BASE_URL}/upload-zip`, form, {
       headers: form.getHeaders()
@@ -58,15 +56,15 @@ async function testCleaner() {
     const response = await axios.post(`${BASE_URL}/clean`);
     console.log('✅ clean →', response.data);
   } catch (error) {
-    console.error('❌ clean error:', error.response?.data || error.message);
+    console.error('❌ clean error:', error);
   }
 }
 
 async function runTests() {
-  await testDownload();
-  await testLoadFromZip();
+  //await testDownload();
+  //await testLoadFromZip();
   await testUploadZip();
-  await testCleaner();
+  //await testCleaner();
 }
 
 runTests();
