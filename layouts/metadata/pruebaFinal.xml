@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata layout="pruebaFinal">
+   <option iso="ru" name="Русский">Descripción en Русский</option>
+   <option iso="ja" name="日本語">Descripción en 日本語</option>
+   <option iso="ar" name="العربية">Descripción en العربية</option>
+   <option iso="zh-CN" name="中文 (简体)">Descripción en 中文 (简体)</option>
+   <github username="UserBot" repo="osmtracker-layouts" branch="master" />
+</metadata>

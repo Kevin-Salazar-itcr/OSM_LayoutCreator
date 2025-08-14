@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layouts>
+  <layout name="root">
+      <button type="tag" label="Два" icon="pruebaFinal_icons/icon2.png"/>
+      <button type="tag" label="Четыре" icon="pruebaFinal_icons/icon4.png"/>
+      <button type="tag" label="Один" icon="pruebaFinal_icons/icon1.png"/>
+      <button type="tag" label="Три" icon="pruebaFinal_icons/icon3.png"/>
+      <button type="tag" label="Пять" icon="pruebaFinal_icons/icon5.png"/>
+  </layout>
+</layouts>
