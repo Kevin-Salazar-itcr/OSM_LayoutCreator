@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layouts>
+  <layout name="root">
+      <button type="tag" label="二" icon="pruebaFinal_icons/icon2.png"/>
+      <button type="tag" label="一" icon="pruebaFinal_icons/icon1.png"/>
+      <button type="tag" label="三" icon="pruebaFinal_icons/icon3.png"/>
+      <button type="tag" label="四" icon="pruebaFinal_icons/icon4.png"/>
+      <button type="tag" label="五" icon="pruebaFinal_icons/icon5.png"/>
+  </layout>
+</layouts>
